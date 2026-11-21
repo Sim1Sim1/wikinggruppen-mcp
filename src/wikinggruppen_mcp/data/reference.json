@@ -1,0 +1,2008 @@
+{
+ "classes": {
+  "Article": "This class is used to get, create or update articles. Images are handled in a separate class ProductImage. There is also a shortcut class Stock which is useful when you only need to work with the stock.",
+  "Category": "This class is used to get, create or update product categories.",
+  "Customer": "This class is used to get, create or update customers.",
+  "Front": "This class is used to get the available fronts in a multi-front webshop.",
+  "NewsletterRecipient": "This class is used to get, create, update and delete recipients of the newsletter.",
+  "Order": "This class is used to get, create, update, cancel and restore orders. Please note that fees and discounts are represented as order items. Discounts and gift cards have negative prices.",
+  "OrderStatus": "This class is used to get, create, update and delete order statuses, in which orders can be placed.",
+  "PriceList": "This class is used to get, create, update and delete price lists which are used by \"retail customers\". Please note that the actual prices will not be handled here - they are handled in the Article class, using the id of the pricelist.",
+  "ProductImage": "This class is used to get, create and delete product images. Product images are connected to a product, and shared across variants of this product. You will get basic meta-data about the images in Article.get but in this class you will also get/create the binary data of each image.",
+  "ShippingMethod": "This class is used to get information about shipping methods. This can be used as a reference for the parameter shippingMethodId on the orders.",
+  "Stock": "This class is used to get and update stock quantities and settings."
+ },
+ "methods": {
+  "Article.get": {
+   "class": "Article",
+   "action": "get",
+   "intro": "If no parameters are given, all articles will be returned.",
+   "request_params": [
+    {
+     "name": "updatedFrom",
+     "type": "DateTime",
+     "description": "Date and time when the article was updated (YYYY-MM-DD HH:MM:SS)"
+    },
+    {
+     "name": "articleNumber",
+     "type": "string",
+     "description": "Article number"
+    },
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Article id (variant level)"
+    },
+    {
+     "name": "productId",
+     "type": "integer",
+     "description": "Article id (product level)"
+    },
+    {
+     "name": "stockPlace",
+     "type": "string",
+     "description": "Name of the physical place where the article is stored"
+    },
+    {
+     "name": "EANCode",
+     "type": "string",
+     "description": "EAN code (when using a scanner)"
+    },
+    {
+     "name": "categoryId",
+     "type": "integer",
+     "description": "Category which the article is connected to"
+    },
+    {
+     "name": "frontId",
+     "type": "integer",
+     "description": "Front which the article is connected to"
+    },
+    {
+     "name": "getURLs",
+     "type": "boolean",
+     "description": "Include all URLs to the product (URLs in default category per language and front)"
+    },
+    {
+     "name": "getImages",
+     "type": "boolean",
+     "description": "Include meta-data about images (no binary data)"
+    }
+   ],
+   "response_intro": "The response will be an array, even if only one article is returned. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Article id (variant level)"
+    },
+    {
+     "name": "productId",
+     "type": "integer",
+     "description": "Article id (product level)"
+    },
+    {
+     "name": "articleNumber",
+     "type": "string",
+     "description": "Article number"
+    },
+    {
+     "name": "externalParentArticleNumber",
+     "type": "string",
+     "description": "Article number which is shared by variants of same product. Usually empty string."
+    },
+    {
+     "name": "stock",
+     "type": "integer",
+     "description": "Number of available units"
+    },
+    {
+     "name": "stockType",
+     "type": "integer",
+     "description": "1 = infinite stock, 2 = limited stock"
+    },
+    {
+     "name": "isBackOrder",
+     "type": "boolean",
+     "description": "Can the article be ordered even if its not available in stock? *"
+    },
+    {
+     "name": "isDefault",
+     "type": "boolean",
+     "description": "Is this article the default variant of the product? Should be true for non-variant products."
+    },
+    {
+     "name": "isBulky",
+     "type": "boolean",
+     "description": "Is the article large in size? This can control the shipping cost. *"
+    },
+    {
+     "name": "isHidden",
+     "type": "boolean",
+     "description": "Should the article be hidden in the shop? *"
+    },
+    {
+     "name": "producer",
+     "type": "string",
+     "description": "Brand or producer name *"
+    },
+    {
+     "name": "model",
+     "type": "string",
+     "description": "Model name *"
+    },
+    {
+     "name": "weight",
+     "type": "integer",
+     "description": "Weight in grammes"
+    },
+    {
+     "name": "VATRate",
+     "type": "integer",
+     "description": "VAT rate in percent"
+    },
+    {
+     "name": "EANCode",
+     "type": "string",
+     "description": "EAN code"
+    },
+    {
+     "name": "searchWords",
+     "type": "string",
+     "description": "Synonyms or misspellings, used for webshop search *"
+    },
+    {
+     "name": "campaignActive",
+     "type": "boolean",
+     "description": "Is the product in campaign-price mode? *"
+    },
+    {
+     "name": "campaignDateStart",
+     "type": "date",
+     "description": "Date when campaign price starts (YYYY-MM-DD) *"
+    },
+    {
+     "name": "campaignDateEnd",
+     "type": "date",
+     "description": "Date when campaign price ends (YYYY-MM-DD) *"
+    },
+    {
+     "name": "categoryId",
+     "type": "array of integer",
+     "description": "Category ids which the article is connected to *"
+    },
+    {
+     "name": "frontId",
+     "type": "array of integer",
+     "description": "Fronts ids which the article is connected to *"
+    },
+    {
+     "name": "title_{languageCode}",
+     "type": "string",
+     "description": "Title of product *"
+    },
+    {
+     "name": "description_{languageCode}",
+     "type": "string",
+     "description": "Description of product *"
+    },
+    {
+     "name": "metaTitle_{languageCode}",
+     "type": "string",
+     "description": "Meta title, used for SEO *"
+    },
+    {
+     "name": "metaDescription_{languageCode}",
+     "type": "string",
+     "description": "Meta description, used for SEO *"
+    },
+    {
+     "name": "h1_{languageCode}",
+     "type": "string",
+     "description": "Value of H1 tag if it should be different from product title, used for SEO *"
+    },
+    {
+     "name": "customText_{languageCode}",
+     "type": "string",
+     "description": "Each row is a field for the customer to enter text in *"
+    },
+    {
+     "name": "emptyStockText_{languageCode}",
+     "type": "string",
+     "description": "Text do display when out of stock *"
+    },
+    {
+     "name": "options",
+     "type": "array of option",
+     "description": "Options connected to this variant (such as color and size)"
+    },
+    {
+     "name": "(option.title_{languageCode})",
+     "type": "string",
+     "description": "Name of option, for example \"Color\""
+    },
+    {
+     "name": "(option.value_{languageCode})",
+     "type": "string",
+     "description": "Option value, for example \"Blue\""
+    },
+    {
+     "name": "URLs",
+     "type": "array of URL",
+     "description": "URLs to default category per front and language. Returned when getURLs is true in the request. *"
+    },
+    {
+     "name": "(URL.URL)",
+     "type": "string",
+     "description": "URL relative to the domain, for example \"shoes/shoe/\""
+    },
+    {
+     "name": "(URL.languageCode)",
+     "type": "string",
+     "description": "Language code, for example \"en\""
+    },
+    {
+     "name": "(URL.frontId)",
+     "type": "integer",
+     "description": "The front which the URL belongs to"
+    },
+    {
+     "name": "images",
+     "type": "array of image",
+     "description": "Product images - returned when getImages is true in the request. *"
+    },
+    {
+     "name": "(image.imageId)",
+     "type": "integer",
+     "description": "Image Id"
+    },
+    {
+     "name": "(image.listOrder)",
+     "type": "integer",
+     "description": "Value used for sorting multiple images connected to the same product"
+    },
+    {
+     "name": "(image.filename)",
+     "type": "string",
+     "description": "Image filename such as \"image.jpg\". Complete URL is: http://your-webshop-url.com/images/normal/image.jpg where \"normal\" can be replaced with \"mini\", \"list\" and \"zoom\" for different sizes."
+    },
+    {
+     "name": "(image.isZoomable)",
+     "type": "boolean",
+     "description": "If true, the image has a larger size available in the \"/zoom\" folder"
+    },
+    {
+     "name": "inPrice",
+     "type": "float",
+     "description": "Purchase price in default currency, excluding VAT"
+    },
+    {
+     "name": "price_{currencyCode}",
+     "type": "float",
+     "description": "Standard selling price"
+    },
+    {
+     "name": "campaignPrice_{currencyCode}",
+     "type": "float",
+     "description": "Campaign price"
+    },
+    {
+     "name": "staggeringPrices",
+     "type": "array of staggeringPrice",
+     "description": "All levels of staggering prices"
+    },
+    {
+     "name": "(staggeringPrice.quantity)",
+     "type": "integer",
+     "description": "Minimun quantity to buy in order to get the reduced price"
+    },
+    {
+     "name": "(staggeringPrice.priceListId)",
+     "type": "integer",
+     "description": "Price list Id (or zero)"
+    },
+    {
+     "name": "(staggeringPrice.price_{currencyCode})",
+     "type": "float",
+     "description": "Price"
+    },
+    {
+     "name": "(staggeringPrice.campaignPrice_{currencyCode})",
+     "type": "float",
+     "description": "Campaign price (when the product is in campaign mode)"
+    },
+    {
+     "name": "priceListPrices",
+     "type": "array of priceListPrice",
+     "description": "All pricelist prices (for retail customers)"
+    },
+    {
+     "name": "(priceListPrice.priceListId)",
+     "type": "integer",
+     "description": "Price list Id"
+    },
+    {
+     "name": "(priceListPrice.price_{currencyCode})",
+     "type": "float",
+     "description": "Price"
+    }
+   ]
+  },
+  "Article.set": {
+   "class": "Article",
+   "action": "set",
+   "intro": "Used to update an existing article. Required parameters are articleNumber or id. URLs will change if title, category or fronts are changed.",
+   "request_params": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Article id (variant level). Only used for identification - cannot be changed."
+    },
+    {
+     "name": "articleNumber",
+     "type": "string",
+     "description": "Article number. Can only be changed if id is given. If the new article number is not unique, the API will alter it to become unique."
+    },
+    {
+     "name": "stock",
+     "type": "integer",
+     "description": "Number of available units"
+    },
+    {
+     "name": "stockType",
+     "type": "integer",
+     "description": "1 = infinite stock, 2 = limited stock"
+    },
+    {
+     "name": "isBackOrder",
+     "type": "boolean",
+     "description": "Can the article be ordered even if its not available in stock? *"
+    },
+    {
+     "name": "isDefault",
+     "type": "boolean",
+     "description": "Is this article the default variant of the product? Should be true for non-variant products."
+    },
+    {
+     "name": "isBulky",
+     "type": "boolean",
+     "description": "Is the article large in size? This can control the shipping cost. *"
+    },
+    {
+     "name": "isHidden",
+     "type": "boolean",
+     "description": "Should the article be hidden in the shop? *"
+    },
+    {
+     "name": "producer",
+     "type": "string",
+     "description": "Brand or producer name *"
+    },
+    {
+     "name": "model",
+     "type": "string",
+     "description": "Model name *"
+    },
+    {
+     "name": "weight",
+     "type": "integer",
+     "description": "Weight in grammes"
+    },
+    {
+     "name": "VATRate",
+     "type": "integer",
+     "description": "VAT rate in percent"
+    },
+    {
+     "name": "stockPlace",
+     "type": "string",
+     "description": "Name of the physical place where the article is stored"
+    },
+    {
+     "name": "EANCode",
+     "type": "string",
+     "description": "EAN code"
+    },
+    {
+     "name": "searchWords",
+     "type": "string",
+     "description": "Synonyms or misspellings, used for webshop search *"
+    },
+    {
+     "name": "campaignActive",
+     "type": "boolean",
+     "description": "Is the product in campaign-price mode? *"
+    },
+    {
+     "name": "campaignDateStart",
+     "type": "date",
+     "description": "Date when campaign price starts (YYYY-MM-DD) *"
+    },
+    {
+     "name": "campaignDateEnd",
+     "type": "date",
+     "description": "Date when campaign price ends (YYYY-MM-DD) *"
+    },
+    {
+     "name": "categoryId",
+     "type": "array of integer",
+     "description": "Category ids which the article is connected to *"
+    },
+    {
+     "name": "frontId",
+     "type": "array of integer",
+     "description": "Fronts ids which the article is connected to *"
+    },
+    {
+     "name": "title_{languageCode}",
+     "type": "string",
+     "description": "Title of product *"
+    },
+    {
+     "name": "description_{languageCode}",
+     "type": "string",
+     "description": "Description of product *"
+    },
+    {
+     "name": "metaTitle_{languageCode}",
+     "type": "string",
+     "description": "Meta title, used for SEO *"
+    },
+    {
+     "name": "metaDescription_{languageCode}",
+     "type": "string",
+     "description": "Meta description, used for SEO *"
+    },
+    {
+     "name": "h1_{languageCode}",
+     "type": "string",
+     "description": "Value of H1 tag if it should be different from product title, used for SEO *"
+    },
+    {
+     "name": "customText_{languageCode}",
+     "type": "string",
+     "description": "Each row is a field for the customer to enter text in *"
+    },
+    {
+     "name": "emptyStockText_{languageCode}",
+     "type": "string",
+     "description": "Text do display when out of stock *"
+    },
+    {
+     "name": "inPrice",
+     "type": "float",
+     "description": "Purchase price in default currency, excluding VAT"
+    },
+    {
+     "name": "price_{currencyCode}",
+     "type": "float",
+     "description": "Standard selling price"
+    },
+    {
+     "name": "campaignPrice_{currencyCode}",
+     "type": "float",
+     "description": "Campaign price"
+    },
+    {
+     "name": "staggeringPrices",
+     "type": "array of staggeringPrice",
+     "description": "All levels of staggering prices"
+    },
+    {
+     "name": "(staggeringPrice.quantity)",
+     "type": "integer",
+     "description": "Minimun quantity to buy in order to get the reduced price"
+    },
+    {
+     "name": "(staggeringPrice.priceListId)",
+     "type": "integer",
+     "description": "Price list Id (or zero)"
+    },
+    {
+     "name": "(staggeringPrice.price_{currencyCode})",
+     "type": "float",
+     "description": "Price"
+    },
+    {
+     "name": "(staggeringPrice.campaignPrice_{currencyCode})",
+     "type": "float",
+     "description": "Campaign price (when the product is in campaign mode)"
+    },
+    {
+     "name": "priceListPrices",
+     "type": "array of priceListPrice",
+     "description": "All pricelist prices (for retail customers)"
+    },
+    {
+     "name": "(priceListPrice.priceListId)",
+     "type": "integer",
+     "description": "Price list Id"
+    },
+    {
+     "name": "(priceListPrice.price_{currencyCode})",
+     "type": "float",
+     "description": "Price"
+    }
+   ],
+   "response_intro": "The response will be an object with the following parameters: articleNumber, id and productId. Please note that the system can alter the article numbers to make them unique.",
+   "response_fields": []
+  },
+  "Article.create": {
+   "class": "Article",
+   "action": "create",
+   "intro": "Used to create a new article. Required parameters are categoryId and articleNumber. Use the same request parameters as in Article.set. If you want to create variants to a product, you need to use the same value of externalParentArticleNumber on the multiple variant articles. You also need to specify the same option titles for each variant (such as Size or Color).",
+   "request_params": [
+    {
+     "name": "externalParentArticleNumber",
+     "type": "string",
+     "description": "Article number which is shared by variants of same product."
+    },
+    {
+     "name": "options",
+     "type": "array of option",
+     "description": "Options connected to this variant (such as color and size)"
+    },
+    {
+     "name": "(option.title_{languageCode})",
+     "type": "string",
+     "description": "Name of option, for example \"Color\""
+    },
+    {
+     "name": "(option.value_{languageCode})",
+     "type": "string",
+     "description": "Option value, for example \"Blue\""
+    }
+   ],
+   "response_intro": "The response will be an object with the following parameters: articleNumber, id and productId. Please note that the system can alter the article numbers to make them unique.",
+   "response_fields": []
+  },
+  "Category.get": {
+   "class": "Category",
+   "action": "get",
+   "intro": "If no parameters are given, all categories will be returned.",
+   "request_params": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of category"
+    },
+    {
+     "name": "parentId",
+     "type": "integer",
+     "description": "Id of the parent category (or zero)"
+    },
+    {
+     "name": "frontId",
+     "type": "integer",
+     "description": "Front which the article is connected to"
+    }
+   ],
+   "response_intro": "The response will be an array, even if only one article is returned. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of category"
+    },
+    {
+     "name": "parentId",
+     "type": "integer",
+     "description": "Id of the parent category (or zero)"
+    },
+    {
+     "name": "frontId",
+     "type": "array of integer",
+     "description": "Fronts ids which the category is connected to"
+    },
+    {
+     "name": "title_{languageCode}",
+     "type": "string",
+     "description": "Name of category - shown in menus"
+    },
+    {
+     "name": "description_{languageCode}",
+     "type": "string",
+     "description": "Description of category"
+    },
+    {
+     "name": "metaTitle_{languageCode}",
+     "type": "string",
+     "description": "Meta title, used for SEO"
+    },
+    {
+     "name": "metaDescription_{languageCode}",
+     "type": "string",
+     "description": "Meta description, used for SEO"
+    },
+    {
+     "name": "h1_{languageCode}",
+     "type": "string",
+     "description": "Value of H1 tag if it should be different from title, used for SEO"
+    },
+    {
+     "name": "path_{languageCode}",
+     "type": "string",
+     "description": "Chained path of category if it belongs to a parent category. Example: \"Books - Mystery\""
+    },
+    {
+     "name": "isVisible",
+     "type": "boolean",
+     "description": "Is the category visible in the shop?"
+    },
+    {
+     "name": "isOnArea",
+     "type": "integer",
+     "description": "Id of \"area\" where the products belonging to this category should be listed. Areas are pre-defined by Wikinggruppen, such as the start page."
+    }
+   ]
+  },
+  "Category.set": {
+   "class": "Category",
+   "action": "set",
+   "intro": "Used to edit a category. If you edit the title or parentId, the URL of the category and all products belonging to the category will be accordingly. Use the same request parameters as in the response from Category.get except \"path\". Required parameter: id.",
+   "request_params": [],
+   "response_intro": "The response will be true (boolean) if the update is successful.",
+   "response_fields": []
+  },
+  "Category.create": {
+   "class": "Category",
+   "action": "create",
+   "intro": "Used to create a new category. Use the same request parameters as in the response from Category.get except \"path\".",
+   "request_params": [],
+   "response_intro": "The response will be the id (integer) of the new category.",
+   "response_fields": []
+  },
+  "Customer.get": {
+   "class": "Customer",
+   "action": "get",
+   "intro": "If no parameters are given, all customers will be returned.",
+   "request_params": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of customer"
+    },
+    {
+     "name": "email",
+     "type": "string",
+     "description": "E-mail address of customer"
+    }
+   ],
+   "response_intro": "The response will be an array, even if only one article is returned. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of customer"
+    },
+    {
+     "name": "email",
+     "type": "string",
+     "description": "E-mail address"
+    },
+    {
+     "name": "telephone",
+     "type": "string",
+     "description": "Telephone number"
+    },
+    {
+     "name": "cellphone",
+     "type": "string",
+     "description": "Cellphone number"
+    },
+    {
+     "name": "isCompany",
+     "type": "boolean",
+     "description": "Is the customer a company?"
+    },
+    {
+     "name": "isRetail",
+     "type": "boolean",
+     "description": "Is the customer a \"retail customer\"? (meaning they have a special deal with the shop and a password)"
+    },
+    {
+     "name": "isFreeShipping",
+     "type": "boolean",
+     "description": "Does the customer have free shipping?"
+    },
+    {
+     "name": "priceListId",
+     "type": "integer",
+     "description": "Id of priceList (or zero) - used for retail customers"
+    },
+    {
+     "name": "shippingAddress",
+     "type": "object of address",
+     "description": "Shipping address (see below)"
+    },
+    {
+     "name": "billingAddress",
+     "type": "object of address",
+     "description": "Billing address (see below)"
+    },
+    {
+     "name": "(address.fullName)",
+     "type": "string",
+     "description": "Company name or firstName lastName"
+    },
+    {
+     "name": "(address.firstName)",
+     "type": "string",
+     "description": "First name"
+    },
+    {
+     "name": "(address.lastName)",
+     "type": "string",
+     "description": "Last name"
+    },
+    {
+     "name": "(address.streetRow1)",
+     "type": "string",
+     "description": "First row of street address"
+    },
+    {
+     "name": "(address.streetRow2)",
+     "type": "string",
+     "description": "Second row of street address (rarely used)"
+    },
+    {
+     "name": "(address.streetRow3)",
+     "type": "string",
+     "description": "Third row of street address (very rarely used)"
+    },
+    {
+     "name": "(address.zipCode)",
+     "type": "string",
+     "description": "Zip code"
+    },
+    {
+     "name": "(address.city)",
+     "type": "string",
+     "description": "City"
+    },
+    {
+     "name": "(address.countryCode)",
+     "type": "string",
+     "description": "Two-character country code such as SE or FI"
+    },
+    {
+     "name": "(address.idNumber)",
+     "type": "string",
+     "description": "Company organization number"
+    },
+    {
+     "name": "(address.VATNumber)",
+     "type": "string",
+     "description": "Company VAT number"
+    }
+   ]
+  },
+  "Customer.set": {
+   "class": "Customer",
+   "action": "set",
+   "intro": "Used to edit a customer. Use the same request parameters as in the response from Customer.get. You can also edit the password in this method (see below). Required parameter: id or email.",
+   "request_params": [
+    {
+     "name": "password",
+     "type": "string",
+     "description": "New password"
+    }
+   ],
+   "response_intro": "The response will be the id (integer) of the updated customer.",
+   "response_fields": []
+  },
+  "Customer.create": {
+   "class": "Customer",
+   "action": "create",
+   "intro": "Used to create a new customer. Use the same request parameters as in Customer.set. Required parameter: email and shippingAddress.",
+   "request_params": [],
+   "response_intro": "The response will be the id (integer) of the new customer.",
+   "response_fields": []
+  },
+  "Front.get": {
+   "class": "Front",
+   "action": "get",
+   "intro": "No request parameters are needed.",
+   "request_params": [],
+   "response_intro": "The response will be an array, even if only one front is returned. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of front"
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "description": "Title, describing the front"
+    }
+   ]
+  },
+  "NewsletterRecipient.get": {
+   "class": "NewsletterRecipient",
+   "action": "get",
+   "intro": "No request parameters are needed.",
+   "request_params": [],
+   "response_intro": "The response will be an array, even if only one recipient is returned. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "email",
+     "type": "string",
+     "description": "E-mail address"
+    },
+    {
+     "name": "firstName",
+     "type": "string",
+     "description": "First name"
+    },
+    {
+     "name": "lastName",
+     "type": "string",
+     "description": "Last name"
+    },
+    {
+     "name": "frontId",
+     "type": "integer",
+     "description": "Front Id (since each front can have its own list of recipients)"
+    }
+   ]
+  },
+  "NewsletterRecipient.set": {
+   "class": "NewsletterRecipient",
+   "action": "set",
+   "intro": "Used to update the name of a recipient. Use the same parameters as in the response from NewsletterRecipient.get. Required parameters: email and (firstName or lastName)",
+   "request_params": [],
+   "response_intro": "The response will true (boolean) if successful.",
+   "response_fields": []
+  },
+  "NewsletterRecipient.create": {
+   "class": "NewsletterRecipient",
+   "action": "create",
+   "intro": "Used to create a new recipient. Use the same parameters as in the response from NewsletterRecipient.get. Required parameter: email",
+   "request_params": [],
+   "response_intro": "The response will true (boolean) if successful.",
+   "response_fields": []
+  },
+  "NewsletterRecipient.delete": {
+   "class": "NewsletterRecipient",
+   "action": "delete",
+   "intro": "Used to delete a recipient. Required parameter: email",
+   "request_params": [
+    {
+     "name": "email",
+     "type": "string",
+     "description": "E-mail address"
+    },
+    {
+     "name": "frontId",
+     "type": "integer",
+     "description": "Front Id (since each front can have its own list of recipients)"
+    }
+   ],
+   "response_intro": "The response will true (boolean) if successful. Order This class is used to get, create, update, cancel and restore orders. Please note that fees and discounts are represented as order items. Discounts and gift cards have negative prices.",
+   "response_fields": []
+  },
+  "Order.get": {
+   "class": "Order",
+   "action": "get",
+   "intro": "If no parameters are given, all orders will be returned.",
+   "request_params": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Order id"
+    },
+    {
+     "name": "fromId",
+     "type": "integer",
+     "description": "Get all orders with this id or above"
+    },
+    {
+     "name": "fromTime",
+     "type": "DateTime",
+     "description": "Get all orders created from this date and time (YYYY-MM-DD HH:MM:SS)"
+    },
+    {
+     "name": "orderStatus",
+     "type": "array of integer",
+     "description": "Id of the order status"
+    },
+    {
+     "name": "frontId",
+     "type": "array of integer",
+     "description": "Id of the front in which the order was created"
+    }
+   ],
+   "response_intro": "The response will be an array, even if only one article is returned. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Order id"
+    },
+    {
+     "name": "orderTime",
+     "type": "DateTime",
+     "description": "Date and time when the order was created (YYYY-MM-DD HH:MM:SS)"
+    },
+    {
+     "name": "orderStatus",
+     "type": "integer",
+     "description": "Id of the order status"
+    },
+    {
+     "name": "payMethod",
+     "type": "string",
+     "description": "Payment method identifier"
+    },
+    {
+     "name": "totalWeight",
+     "type": "integer",
+     "description": "Total weight in grammes"
+    },
+    {
+     "name": "totalAmount",
+     "type": "float",
+     "description": "Total amount to pay, including or excluding VAT depending on the customer"
+    },
+    {
+     "name": "noVATOnAmount",
+     "type": "boolean",
+     "description": "True if the customer should not pay any VAT on this order"
+    },
+    {
+     "name": "currencyCode",
+     "type": "string",
+     "description": "Currency code (For example: EUR)"
+    },
+    {
+     "name": "currencyRate",
+     "type": "float",
+     "description": "Currency rate in relation to SEK (multiply with this to get SEK)"
+    },
+    {
+     "name": "languageCode",
+     "type": "string",
+     "description": "Customer's selected language code (For example: sv)"
+    },
+    {
+     "name": "discountCode",
+     "type": "string",
+     "description": "The discount code used on this order"
+    },
+    {
+     "name": "message",
+     "type": "string",
+     "description": "Message from the customer"
+    },
+    {
+     "name": "isCanceled",
+     "type": "boolean",
+     "description": "True if the order has been canceled"
+    },
+    {
+     "name": "isInStats",
+     "type": "boolean",
+     "description": "True if the order is valid and should be in the statistics"
+    },
+    {
+     "name": "comment",
+     "type": "string",
+     "description": "Internal comment"
+    },
+    {
+     "name": "shippingMethodId",
+     "type": "integer",
+     "description": "Id of shipping method (can be zero)"
+    },
+    {
+     "name": "frontId",
+     "type": "integer",
+     "description": "Id of the front in which the order was created"
+    },
+    {
+     "name": "unifaunCode",
+     "type": "string",
+     "description": "Unifaun service code"
+    },
+    {
+     "name": "items",
+     "type": "array of item",
+     "description": "See below"
+    },
+    {
+     "name": "(item.articleType)",
+     "type": "integer",
+     "description": "0 = Physical, 1 = Digital, 2 = Shipping, 3 = Payment fee, 4 = Discount (negative price), 5 = Gift card (negative price)"
+    },
+    {
+     "name": "(item.rowId)",
+     "type": "integer",
+     "description": "Id of order item"
+    },
+    {
+     "name": "(item.articleNumber)",
+     "type": "string",
+     "description": "Article number"
+    },
+    {
+     "name": "(item.title)",
+     "type": "string",
+     "description": "Product name"
+    },
+    {
+     "name": "(item.options)",
+     "type": "string",
+     "description": "Product variation, for example \"Medium, Blue\""
+    },
+    {
+     "name": "(item.quantity)",
+     "type": "integer",
+     "description": "Quantity"
+    },
+    {
+     "name": "(item.price)",
+     "type": "float",
+     "description": "Price per unit - including or excluding VAT depending on the customer."
+    },
+    {
+     "name": "(item.VATRate)",
+     "type": "integer",
+     "description": "VAT Rate, for example 25. Set to zero if the customer should not pay VAT."
+    },
+    {
+     "name": "(item.producer)",
+     "type": "string",
+     "description": "Name of the producer"
+    },
+    {
+     "name": "(item.stockPlace)",
+     "type": "string",
+     "description": "Name of the physical place where the article is stored"
+    },
+    {
+     "name": "client",
+     "type": "object of client",
+     "description": "See below"
+    },
+    {
+     "name": "(client.telephone)",
+     "type": "string",
+     "description": "Customer telephone number"
+    },
+    {
+     "name": "(client.cellphone)",
+     "type": "string",
+     "description": "Customer cellphone number"
+    },
+    {
+     "name": "(client.email)",
+     "type": "string",
+     "description": "Customer e.mail address"
+    },
+    {
+     "name": "(client.isCompany)",
+     "type": "boolean",
+     "description": "True if the customer is a company"
+    },
+    {
+     "name": "(client.shippingAddress)",
+     "type": "object of address",
+     "description": "Shipping address (see below)"
+    },
+    {
+     "name": "(client.billingAddress)",
+     "type": "object of address",
+     "description": "Billing address (see below)"
+    },
+    {
+     "name": "(address.fullName)",
+     "type": "string",
+     "description": "Company name or firstName lastName"
+    },
+    {
+     "name": "(address.firstName)",
+     "type": "string",
+     "description": "First name"
+    },
+    {
+     "name": "(address.lastName)",
+     "type": "string",
+     "description": "Last name"
+    },
+    {
+     "name": "(address.streetRow1)",
+     "type": "string",
+     "description": "First row of street address"
+    },
+    {
+     "name": "(address.streetRow2)",
+     "type": "string",
+     "description": "Second row of street address (rarely used)"
+    },
+    {
+     "name": "(address.streetRow3)",
+     "type": "string",
+     "description": "Third row of street address (very rarely used)"
+    },
+    {
+     "name": "(address.zipCode)",
+     "type": "string",
+     "description": "Zip code"
+    },
+    {
+     "name": "(address.city)",
+     "type": "string",
+     "description": "City"
+    },
+    {
+     "name": "(address.state)",
+     "type": "string",
+     "description": "US State (two characters)"
+    },
+    {
+     "name": "(address.countryCode)",
+     "type": "string",
+     "description": "Two-character country code such as SE or FI"
+    },
+    {
+     "name": "(address.idNumber)",
+     "type": "string",
+     "description": "Company organization number"
+    },
+    {
+     "name": "(address.VATNumber)",
+     "type": "string",
+     "description": "Company VAT number"
+    },
+    {
+     "name": "klarna",
+     "type": "object of klarna",
+     "description": "Available if payment method is KLARNACHECKOUT. See below."
+    },
+    {
+     "name": "(klarna.api)",
+     "type": "string",
+     "description": "Klarna API version"
+    },
+    {
+     "name": "(klarna.reservation)",
+     "type": "string",
+     "description": "Klarna reservation id"
+    },
+    {
+     "name": "(klarna.eid)",
+     "type": "string",
+     "description": "Klarna merchant id"
+    }
+   ]
+  },
+  "Order.set": {
+   "class": "Order",
+   "action": "set",
+   "intro": "Used to update an order. When sending order items, the API will delete current order items and insert the ones from the request. Required parameter: id",
+   "request_params": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Order id"
+    },
+    {
+     "name": "orderStatus",
+     "type": "integer",
+     "description": "Id of the order status"
+    },
+    {
+     "name": "totalWeight",
+     "type": "integer",
+     "description": "Total weight in grammes"
+    },
+    {
+     "name": "noVATOnAmount",
+     "type": "boolean",
+     "description": "True if the customer should not pay any VAT on this order"
+    },
+    {
+     "name": "discountCode",
+     "type": "string",
+     "description": "The discount code used on this order"
+    },
+    {
+     "name": "message",
+     "type": "string",
+     "description": "Message from the customer"
+    },
+    {
+     "name": "isInStats",
+     "type": "boolean",
+     "description": "True if the order is valid and should be in the statistics"
+    },
+    {
+     "name": "comment",
+     "type": "string",
+     "description": "Internal comment"
+    },
+    {
+     "name": "shippingMethodId",
+     "type": "integer",
+     "description": "Id of shipping method (can be zero)"
+    },
+    {
+     "name": "frontId",
+     "type": "integer",
+     "description": "Id of the front in which the order was created"
+    },
+    {
+     "name": "unifaunCode",
+     "type": "string",
+     "description": "Unifaun service code"
+    },
+    {
+     "name": "items",
+     "type": "array of item",
+     "description": "See below"
+    },
+    {
+     "name": "(item.articleType)",
+     "type": "integer",
+     "description": "0 = Physical, 1 = Digital, 2 = Shipping, 3 = Payment fee, 4 = Discount (negative price), 5 = Gift card (negative price)"
+    },
+    {
+     "name": "(item.articleNumber)",
+     "type": "string",
+     "description": "Article number"
+    },
+    {
+     "name": "(item.title)",
+     "type": "string",
+     "description": "Product name"
+    },
+    {
+     "name": "(item.options)",
+     "type": "string",
+     "description": "Product variation, for example \"Medium, Blue\""
+    },
+    {
+     "name": "(item.quantity)",
+     "type": "integer",
+     "description": "Quantity"
+    },
+    {
+     "name": "(item.price)",
+     "type": "float",
+     "description": "Price per unit, including or excluding VAT depending on the customer."
+    },
+    {
+     "name": "(item.VATRate)",
+     "type": "integer",
+     "description": "VAT Rate, for example 25. Set to zero if the customer should not pay VAT."
+    },
+    {
+     "name": "(item.producer)",
+     "type": "string",
+     "description": "Name of the producer"
+    },
+    {
+     "name": "client",
+     "type": "object of client",
+     "description": "See below"
+    },
+    {
+     "name": "(client.telephone)",
+     "type": "string",
+     "description": "Customer telephone number"
+    },
+    {
+     "name": "(client.cellphone)",
+     "type": "string",
+     "description": "Customer cellphone number"
+    },
+    {
+     "name": "(client.email)",
+     "type": "string",
+     "description": "Customer e.mail address"
+    },
+    {
+     "name": "(client.isCompany)",
+     "type": "boolean",
+     "description": "True if the customer is a company"
+    },
+    {
+     "name": "(client.shippingAddress)",
+     "type": "object of address",
+     "description": "Shipping address (see below)"
+    },
+    {
+     "name": "(client.billingAddress)",
+     "type": "object of address",
+     "description": "Billing address (see below)"
+    },
+    {
+     "name": "(address.fullName)",
+     "type": "string",
+     "description": "Company name or firstName lastName"
+    },
+    {
+     "name": "(address.firstName)",
+     "type": "string",
+     "description": "First name"
+    },
+    {
+     "name": "(address.lastName)",
+     "type": "string",
+     "description": "Last name"
+    },
+    {
+     "name": "(address.streetRow1)",
+     "type": "string",
+     "description": "First row of street address"
+    },
+    {
+     "name": "(address.streetRow2)",
+     "type": "string",
+     "description": "Second row of street address (rarely used)"
+    },
+    {
+     "name": "(address.streetRow3)",
+     "type": "string",
+     "description": "Third row of street address (very rarely used)"
+    },
+    {
+     "name": "(address.zipCode)",
+     "type": "string",
+     "description": "Zip code"
+    },
+    {
+     "name": "(address.city)",
+     "type": "string",
+     "description": "City"
+    },
+    {
+     "name": "(address.state)",
+     "type": "string",
+     "description": "US State (two characters)"
+    },
+    {
+     "name": "(address.countryCode)",
+     "type": "string",
+     "description": "Two-character country code such as SE or FI"
+    },
+    {
+     "name": "(address.idNumber)",
+     "type": "string",
+     "description": "Company organization number"
+    },
+    {
+     "name": "(address.VATNumber)",
+     "type": "string",
+     "description": "Company VAT number"
+    }
+   ],
+   "response_intro": "The response will be true (boolean) if successful.",
+   "response_fields": []
+  },
+  "Order.create": {
+   "class": "Order",
+   "action": "create",
+   "intro": "Used to create an order. Required parameters are: client.email and client.shippingAddress.",
+   "request_params": [
+    {
+     "name": "sendReceiptToClient",
+     "type": "boolean",
+     "description": "If true, a confirmation e-mail will be sent to the customer."
+    },
+    {
+     "name": "orderTime",
+     "type": "DateTime",
+     "description": "Date and time when the order was created (YYYY-MM-DD HH:MM:SS)"
+    },
+    {
+     "name": "orderStatus",
+     "type": "integer",
+     "description": "Id of the order status"
+    },
+    {
+     "name": "totalWeight",
+     "type": "integer",
+     "description": "Total weight in grammes"
+    },
+    {
+     "name": "noVATOnAmount",
+     "type": "boolean",
+     "description": "True if the customer should not pay any VAT on this order"
+    },
+    {
+     "name": "currencyCode",
+     "type": "string",
+     "description": "Currency code (For example: EUR)"
+    },
+    {
+     "name": "languageCode",
+     "type": "string",
+     "description": "Customer's selected language code (For example: sv)"
+    },
+    {
+     "name": "discountCode",
+     "type": "string",
+     "description": "The discount code used on this order"
+    },
+    {
+     "name": "message",
+     "type": "string",
+     "description": "Message from the customer"
+    },
+    {
+     "name": "isInStats",
+     "type": "boolean",
+     "description": "True if the order is valid and should be in the statistics"
+    },
+    {
+     "name": "comment",
+     "type": "string",
+     "description": "Internal comment"
+    },
+    {
+     "name": "shippingMethodId",
+     "type": "integer",
+     "description": "Id of shipping method (can be zero)"
+    },
+    {
+     "name": "frontId",
+     "type": "integer",
+     "description": "Id of the front in which the order was created"
+    },
+    {
+     "name": "unifaunCode",
+     "type": "string",
+     "description": "Unifaun service code"
+    },
+    {
+     "name": "adjustStock",
+     "type": "boolean",
+     "description": "If true, the webshop stock will be adjusted with the quantities from the order."
+    },
+    {
+     "name": "items",
+     "type": "array of item",
+     "description": "See below"
+    },
+    {
+     "name": "(item.articleType)",
+     "type": "integer",
+     "description": "0 = Physical, 1 = Digital, 2 = Shipping, 3 = Payment fee, 4 = Discount (negative price), 5 = Gift card (negative price)"
+    },
+    {
+     "name": "(item.articleNumber)",
+     "type": "string",
+     "description": "Article number"
+    },
+    {
+     "name": "(item.title)",
+     "type": "string",
+     "description": "Product name"
+    },
+    {
+     "name": "(item.options)",
+     "type": "string",
+     "description": "Product variation, for example \"Medium, Blue\""
+    },
+    {
+     "name": "(item.quantity)",
+     "type": "integer",
+     "description": "Quantity"
+    },
+    {
+     "name": "(item.price)",
+     "type": "float",
+     "description": "Price per unit - including or excluding VAT depending on the customer."
+    },
+    {
+     "name": "(item.VATRate)",
+     "type": "integer",
+     "description": "VAT Rate, for example 25. Set to zero if the customer should not pay VAT."
+    },
+    {
+     "name": "(item.producer)",
+     "type": "string",
+     "description": "Name of the producer"
+    },
+    {
+     "name": "client",
+     "type": "object of client",
+     "description": "See below"
+    },
+    {
+     "name": "(client.telephone)",
+     "type": "string",
+     "description": "Customer telephone number"
+    },
+    {
+     "name": "(client.cellphone)",
+     "type": "string",
+     "description": "Customer cellphone number"
+    },
+    {
+     "name": "(client.email)",
+     "type": "string",
+     "description": "Customer e.mail address"
+    },
+    {
+     "name": "(client.isCompany)",
+     "type": "boolean",
+     "description": "True if the customer is a company"
+    },
+    {
+     "name": "(client.shippingAddress)",
+     "type": "object of address",
+     "description": "Shipping address (see below)"
+    },
+    {
+     "name": "(client.billingAddress)",
+     "type": "object of address",
+     "description": "Billing address (see below)"
+    },
+    {
+     "name": "(address.fullName)",
+     "type": "string",
+     "description": "Company name or firstName lastName"
+    },
+    {
+     "name": "(address.firstName)",
+     "type": "string",
+     "description": "First name"
+    },
+    {
+     "name": "(address.lastName)",
+     "type": "string",
+     "description": "Last name"
+    },
+    {
+     "name": "(address.streetRow1)",
+     "type": "string",
+     "description": "First row of street address"
+    },
+    {
+     "name": "(address.streetRow2)",
+     "type": "string",
+     "description": "Second row of street address (rarely used)"
+    },
+    {
+     "name": "(address.streetRow3)",
+     "type": "string",
+     "description": "Third row of street address (very rarely used)"
+    },
+    {
+     "name": "(address.zipCode)",
+     "type": "string",
+     "description": "Zip code"
+    },
+    {
+     "name": "(address.city)",
+     "type": "string",
+     "description": "City"
+    },
+    {
+     "name": "(address.state)",
+     "type": "string",
+     "description": "US State (two characters)"
+    },
+    {
+     "name": "(address.countryCode)",
+     "type": "string",
+     "description": "Two-character country code such as SE or FI"
+    },
+    {
+     "name": "(address.idNumber)",
+     "type": "string",
+     "description": "Company organization number"
+    },
+    {
+     "name": "(address.VATNumber)",
+     "type": "string",
+     "description": "Company VAT number"
+    }
+   ],
+   "response_intro": "The response will be the id (integer) of the new order.",
+   "response_fields": []
+  },
+  "Order.cancel": {
+   "class": "Order",
+   "action": "cancel",
+   "intro": "Used to cancel an order. This might also cancel the transaction/invoice, depending on the payment method. Both parameters are required.",
+   "request_params": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Order id"
+    },
+    {
+     "name": "adjustStock",
+     "type": "boolean",
+     "description": "If true, the webshop stock will be adjusted with the quantities from the order."
+    }
+   ],
+   "response_intro": "The response will be true (boolean) if successful.",
+   "response_fields": []
+  },
+  "Order.restore": {
+   "class": "Order",
+   "action": "restore",
+   "intro": "Used to restore an order that has been canceled. Both parameters are required.",
+   "request_params": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Order id"
+    },
+    {
+     "name": "adjustStock",
+     "type": "boolean",
+     "description": "If true, the webshop stock will be adjusted with the quantities from the order."
+    }
+   ],
+   "response_intro": "The response will be true (boolean) if successful.",
+   "response_fields": []
+  },
+  "OrderStatus.get": {
+   "class": "OrderStatus",
+   "action": "get",
+   "intro": "No request parameters are needed.",
+   "request_params": [],
+   "response_intro": "The response will be an array. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of status (can be negative!)"
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "description": "Title, describing the status"
+    }
+   ]
+  },
+  "OrderStatus.set": {
+   "class": "OrderStatus",
+   "action": "set",
+   "intro": "Used to update the title of an order status. Use the same parameters as in the response from OrderStatus.get. Both id and title are required parameters. You cannot change the title of orderstatus with id 0 or -1.",
+   "request_params": [],
+   "response_intro": "The response will be: true (boolean) if successful. When trying to change the title of orderstatus 0 or -1, the response will be false (boolean).",
+   "response_fields": []
+  },
+  "OrderStatus.create": {
+   "class": "OrderStatus",
+   "action": "create",
+   "intro": "Used to create a new order status.",
+   "request_params": [
+    {
+     "name": "title",
+     "type": "string",
+     "description": "Title, describing the status"
+    }
+   ],
+   "response_intro": "The response will be the id (integer) of the new order status.",
+   "response_fields": []
+  },
+  "OrderStatus.delete": {
+   "class": "OrderStatus",
+   "action": "delete",
+   "intro": "Used to create delete an order status. Orders placed in this status will be moved to the archive (id = -1).",
+   "request_params": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of the status"
+    }
+   ],
+   "response_intro": "The response will be: true (boolean) if successful.",
+   "response_fields": []
+  },
+  "PriceList.get": {
+   "class": "PriceList",
+   "action": "get",
+   "intro": "Used to get the available price lists. No request parameters are needed.",
+   "request_params": [],
+   "response_intro": "The response will be an array. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of the price list"
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "description": "Title, describing the price list"
+    },
+    {
+     "name": "defaultPercent",
+     "type": "float",
+     "description": "The default percentage modifier, if prices are not specified one-by-one. If this value is 80, the customer pays 80% of the standard price, thus getting a discount of 20%."
+    }
+   ]
+  },
+  "PriceList.set": {
+   "class": "PriceList",
+   "action": "set",
+   "intro": "Used to update the title and/or default percentage of a price list. Use the same parameters as in the response from PriceList.get. Required parameter: id",
+   "request_params": [],
+   "response_intro": "The response will be: true (boolean) if successful.",
+   "response_fields": []
+  },
+  "PriceList.create": {
+   "class": "PriceList",
+   "action": "create",
+   "intro": "Used to create a new price list. Use the same parameters as in the response from PriceList.get except for id.",
+   "request_params": [],
+   "response_intro": "The response will be the id (integer) of the new price list.",
+   "response_fields": []
+  },
+  "PriceList.delete": {
+   "class": "PriceList",
+   "action": "delete",
+   "intro": "Used to create delete a price list. Customers using this price list will not be connected to any price list afterwards.",
+   "request_params": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of the price list"
+    }
+   ],
+   "response_intro": "The response will be: true (boolean) if successful.",
+   "response_fields": []
+  },
+  "ProductImage.get": {
+   "class": "ProductImage",
+   "action": "get",
+   "intro": "Used to get one image, or all images of a given product. Please note that the entire image will be returned as base64-encoded data, which might be slow. You have to specify one of these request parameters:",
+   "request_params": [
+    {
+     "name": "articleNumber",
+     "type": "string",
+     "description": "Article number"
+    },
+    {
+     "name": "productId",
+     "type": "integer",
+     "description": "Id of a product"
+    },
+    {
+     "name": "imageId",
+     "type": "integer",
+     "description": "Id of image"
+    }
+   ],
+   "response_intro": "The response will be an array, even if only one image is returned. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "imageId",
+     "type": "integer",
+     "description": "Id of image"
+    },
+    {
+     "name": "productId",
+     "type": "integer",
+     "description": "Id of a product"
+    },
+    {
+     "name": "listOrder",
+     "type": "integer",
+     "description": "Value used for sorting multiple images connected to the same product"
+    },
+    {
+     "name": "isZoomable",
+     "type": "boolean",
+     "description": "If true, the image has a larger size available in the \"/zoom\" folder"
+    },
+    {
+     "name": "filename",
+     "type": "string",
+     "description": "Image filename such as \"image.jpg\". Complete URL is: http://your-webshop-url.com/images/normal/image.jpg where \"normal\" can be replaced with \"mini\", \"list\" and \"zoom\" for different sizes."
+    },
+    {
+     "name": "base64",
+     "type": "string",
+     "description": "Base64 encoded image data of the largest size available"
+    },
+    {
+     "name": "altText_{languageCode}",
+     "type": "string",
+     "description": "Text describing the image, used for SEO."
+    }
+   ]
+  },
+  "ProductImage.create": {
+   "class": "ProductImage",
+   "action": "create",
+   "intro": "Used to create a new product image. Required parameters: productId and base64.",
+   "request_params": [
+    {
+     "name": "productId",
+     "type": "integer",
+     "description": "Id of a product"
+    },
+    {
+     "name": "filename",
+     "type": "string",
+     "description": "Image filename such as \"image.jpg\""
+    },
+    {
+     "name": "base64",
+     "type": "string",
+     "description": "Base64 encoded image data of the largest size available"
+    },
+    {
+     "name": "altText_{languageCode}",
+     "type": "string",
+     "description": "Text describing the image, used for SEO."
+    }
+   ],
+   "response_intro": "The response will be the id (integer) of the new product image.",
+   "response_fields": []
+  },
+  "ProductImage.delete": {
+   "class": "ProductImage",
+   "action": "delete",
+   "intro": "Used to create delete a product image. Required parameters: imageId or productId. If you only provide the productId, all images of the product will be deleted.",
+   "request_params": [
+    {
+     "name": "imageId",
+     "type": "integer",
+     "description": "Image id"
+    },
+    {
+     "name": "productId",
+     "type": "integer",
+     "description": "Product id"
+    }
+   ],
+   "response_intro": "The response will be: true (boolean) if successful and false (boolean) if the given productId cannot be found in the system.",
+   "response_fields": []
+  },
+  "ShippingMethod.get": {
+   "class": "ShippingMethod",
+   "action": "get",
+   "intro": "No request parameters are used.",
+   "request_params": [],
+   "response_intro": "The response will be an array. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "id",
+     "type": "integer",
+     "description": "Id of the shipping method"
+    },
+    {
+     "name": "customerType",
+     "type": "string",
+     "description": "Specifies the type of customer that can use this method. Valid values = company / private / both"
+    },
+    {
+     "name": "unifaunCode",
+     "type": "string",
+     "description": "Unifaun service code"
+    },
+    {
+     "name": "isDeleted",
+     "type": "boolean",
+     "description": "True if the method has been deleted or archived (the method might still be connected to orders)."
+    },
+    {
+     "name": "zone",
+     "type": "object of zone",
+     "description": "See below"
+    },
+    {
+     "name": "(zone.id)",
+     "type": "integer",
+     "description": "Id of shipping zone (shipping methods are grouped by shipping zones)"
+    },
+    {
+     "name": "(zone.title)",
+     "type": "string",
+     "description": "Examples: domestic / europe / north america"
+    },
+    {
+     "name": "title_{languageCode}",
+     "type": "string",
+     "description": "Title/name of shipping method"
+    },
+    {
+     "name": "description_{languageCode}",
+     "type": "string",
+     "description": "Description of shipping method"
+    },
+    {
+     "name": "bulkyPrice_{currencyCode}",
+     "type": "float",
+     "description": "Extra fee per bulky item (see isBulky in article)"
+    },
+    {
+     "name": "freeShipping_{currencyCode}",
+     "type": "float",
+     "description": "Minimum amount for free shipping"
+    },
+    {
+     "name": "freeShippingRetail_{currencyCode}",
+     "type": "float",
+     "description": "Minimum amount for free shipping for signed in retail customers"
+    },
+    {
+     "name": "weightLevels",
+     "type": "object of weightLevel",
+     "description": "See below"
+    },
+    {
+     "name": "(weightLevel.weight)",
+     "type": "integer",
+     "description": "Weight in grams. The cost is applied when the order weighs below and up to this level."
+    },
+    {
+     "name": "(weightLevel.price_{currencyCode})",
+     "type": "float",
+     "description": "Shipping cost for this weight level"
+    }
+   ]
+  },
+  "Stock.get": {
+   "class": "Stock",
+   "action": "get",
+   "intro": "If no request parameters are given, the full inventory will be returned.",
+   "request_params": [
+    {
+     "name": "updatedFrom",
+     "type": "DateTime",
+     "description": "Get results for articles where the stock is updated after this date and time. (YYYY-MM-DD HH:MM:SS)"
+    }
+   ],
+   "response_intro": "The response will be an array. The array elements will have these properties:",
+   "response_fields": [
+    {
+     "name": "articleNumber",
+     "type": "string",
+     "description": "Article number"
+    },
+    {
+     "name": "stock",
+     "type": "integer",
+     "description": "Number of available units"
+    },
+    {
+     "name": "stockType",
+     "type": "integer",
+     "description": "1 = infinite stock, 2 = limited stock"
+    },
+    {
+     "name": "isBackOrder",
+     "type": "boolean",
+     "description": "Can the article be ordered even if its not available in stock? *"
+    }
+   ]
+  },
+  "Stock.set": {
+   "class": "Stock",
+   "action": "set",
+   "intro": "Used to update the stock. The request parameter (params) should be an array. Each row in the array can have the same parameters as in the response from Stock.get, where articleNumber is required.",
+   "request_params": [],
+   "response_intro": "The response will be true (boolean) if successful.",
+   "response_fields": []
+  }
+ },
+ "docs_version": "8.4.0",
+ "intro": "Welcome to the API documentation for Wikinggruppen Webshop. This API follows the JSON-RPC 2.0 specification over HTTP or HTTPS. Available methods are described in this document. Each webshop has its own copy of the API which makes it possible to adjust the methods on demand, or create new ones which suits your needs. Please contact us if you have any questions. Terms of usage With this API you are able to create, alter and delete data in the webshop. The API is used at your own risk and Wikinggruppen cannot be held liable for any loss of data caused by using the API. Contact Wikinggruppen if you need help restoring data from backup but please be aware that this can be non-trivial and subject to charge. Getting started",
+ "basics": [
+  "These are the general requirements for your requests:",
+  "HTTP Request method: POST",
+  "HTTP Request content-type: application/json",
+  "Send JSON as the request body, do not use \"key/value\" approach",
+  "The value of jsonrpc should be 2.0",
+  "The HTTP response will be JSON with content-type application/json and HTTP status 200, unless the request could not not be processed at all.",
+  "Each request can have one or multiple request commands.",
+  "Multiple commands in one request has the benefit of lowering the overhead of HTTP.",
+  "Each request command in JSON-RPC should be given its own id, so that the response body will have a response for each command with the corresponding id.",
+  "One example of when multiple commands is useful, is when you want to update the price of many articles.",
+  "You can do this with a single HTTP request, using multiple commands.",
+  "Some properties are given in each active language, such as title_sv and title_en.",
+  "Similarly prices are given in each active currency, for example price_SEK and price_EUR."
+ ]
+}
