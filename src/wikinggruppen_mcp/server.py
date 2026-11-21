@@ -35,7 +35,7 @@ def wgr_overview() -> dict:
     """What the API is, the request rules, the method classes, and whether live access and writes are switched on."""
     r = ref.reference()
     return {"docs_version": r["docs_version"], "intro": r["intro"], "request_rules": r["basics"],
-            "classes": r["classes"], "live_configured": live_configured(), "writes_allowed": writes_allowed(),
+            "classes": r["classes"], "connection_notes": ref.connection_notes(), "live_configured": live_configured(), "writes_allowed": writes_allowed(),
             "next": "wgr_gotchas, wgr_workflow, wgr_list_methods"}
 
 
@@ -47,7 +47,7 @@ def wgr_list_methods(class_name: str | None = None) -> list[dict]:
 
 @mcp.tool(annotations=KNOW)
 def wgr_describe_method(method: str) -> dict:
-    """Parameters, answer fields and notes for one method, e.g. 'Article.set'. Where the docs say 'same as X', the intro says so."""
+    """Parameters, answer fields and notes for one method, e.g. 'Article.set'. Includes what the docs leave out (answer shape, URL effects). 'Same as X' parameters are filled in."""
     try:
         return ref.describe(method)
     except KeyError as e:

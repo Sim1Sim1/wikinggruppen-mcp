@@ -15,7 +15,7 @@ Two parts:
 | `wgr_list_methods` | All 33 methods, optionally for one class |
 | `wgr_describe_method` | Parameters, answer fields and notes for one method (`Article.set`) |
 | `wgr_find_field` | Which methods take or return a field (`h1`, `campaign`, `weight`) |
-| `wgr_gotchas` | Behaviour the docs do not state (see `src/wikinggruppen_mcp/data/gotchas.md`) |
+| `wgr_gotchas` | Behaviour the docs do not state (see `src/wikinggruppen_mcp/data/gotchas.md`). The same notes also show up in `wgr_describe_method` per method (`data/notes.json`) |
 | `wgr_workflow` | Recipes: backup, product text, prices, stock, new articles, category tree, the import file |
 | `wgr_read` | Run one `*.get` call against the shop |
 | `wgr_write` | Run `set` / `create` commands (up to 50 per request). Needs `WGR_ALLOW_WRITE=1`. Never deletes |

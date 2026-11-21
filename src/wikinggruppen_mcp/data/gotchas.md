@@ -25,6 +25,16 @@ Learned by using the API against a live shop (Nov 2026, docs version 8.4.0; 11.0
 - **Category paths.** `path_sv` joins names with " - ", which also occurs inside names ("Sauna - Accessories"). Build paths from the `parentId` chain if you need something unambiguous. Category ids are fixed through renames and moves, so match on id.
 - **Descriptions can carry markup from the theme.** A shop's `description_sv` may contain tab containers, a specification table and a data-sheet link inside the description. `Article.set` replaces the whole value, so those parts are lost when you write a new description. Look at a sample first.
 
+## Categories
+
+- **Fields.** `title_*` (shown in menus), `description_*` (the text on the category page), `metaTitle_*`, `metaDescription_*`, `h1_*`, `isVisible`, `parentId` (0 = top), `frontId` (array). `path_*` is read-only.
+- **`Category.get`** always returns an array; with no parameters it returns every category. Filter with `id`, `parentId` or `frontId`.
+- **`Category.set`** answers `true` and needs only `id` plus the fields that change. `description_*`, meta, `h1_*` and `isVisible` move nothing. `title_*` and `parentId` change the URL of the category and every article in it.
+- **`Category.create`** answers with the new integer id. Create parents first and give `frontId` (from `Front.get`). Keep new categories hidden until they have content. Not tried live by us: a category cannot be deleted, so test on a hidden one.
+- **No category delete.** Hide with `isVisible: false`.
+- **Tried live:** writing `h1_sv` and a meta title on a hidden test category, reading it back, and restoring the old values worked.
+- **Match on id, not on path.** Paths change when a category is renamed or moved, ids do not (see Data model).
+
 ## What the API cannot do (compared with the import file)
 
 No specification table, no unit (`Enhet`), no product documents, no list price, no delivery time / back-order dates, no energy class, no main category, no article delete, no category delete. Those fields exist only in the CSV/Excel import. Images: `ProductImage.create` takes base64 plus `productId`, not a URL, and `ProductImage.delete` with only `productId` removes all images of the product.

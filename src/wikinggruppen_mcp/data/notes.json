@@ -1,0 +1,35 @@
+{
+ "_connection": [
+  "Shops behind Cloudflare answer 403 'error code: 1106' to calls from a Cloudflare Worker. Run API jobs from a laptop, server or CI. The forwarding service (api.wikinggruppen.se/forward/, header Api-Url) answered 400 'Header Api-Url is missing' from a Worker. See gotchas.md.",
+  "JSON-RPC ids start at 1 (id 0 is answered without an id). Check each command's own result in a batch."
+ ],
+ "Article.get": [
+  "Always an array, also for one article: pick the element whose articleNumber matches.",
+  "No parameters = every article (huge on a big shop). Read per categoryId or use updatedFrom. Add getURLs to see the URL, getImages for image metadata.",
+  "Fields marked * are product-level and shared by all variants."
+ ],
+ "Article.set": [
+  "Answers with an OBJECT {articleNumber, id, productId}, not true. Test for the same id, not for true.",
+  "title_*, categoryId and frontId change the article's URL (301 follows). To change only the visible heading, write h1_* and leave title_* alone.",
+  "description_* replaces the whole description, including any specification table or data-sheet link the theme keeps inside it. Send only fields you mean to change.",
+  "Identify with id (preferred) or articleNumber. A new articleNumber is only accepted together with id, and is altered if not unique."
+ ],
+ "Article.create": [
+  "Answers with an object {articleNumber, id, productId}. The article number may be altered to be unique: read it back.",
+  "Hide new articles (isHidden) until text, image and price are ready. Set weight: a missing weight can mean free shipping."
+ ],
+ "Category.get": [
+  "Always an array. No parameters = all categories. parentId 0 = top level.",
+  "path_* joins names with ' - ', which also occurs inside names. Build your own path from the parentId chain, and match categories on id (fixed through renames and moves)."
+ ],
+ "Category.set": [
+  "Answers true. Required: id. Send only the fields that change.",
+  "title_* or parentId change the URL of the category and of every article in it (301 follows). description_*, metaTitle_*, metaDescription_*, h1_* and isVisible do not move anything.",
+  "path_* cannot be written. There is no Category.delete: hide with isVisible false."
+ ],
+ "Category.create": [
+  "Answers with the new category's integer id. There is no delete, so a mistaken category can only be hidden: try new things on a hidden category first.",
+  "Create parents before children (a child needs its parent's id). Give frontId (ids from Front.get). Keep it hidden until it has content."
+ ],
+ "Stock.set": ["params is an ARRAY of rows, not an object. Answers true."]
+}

@@ -43,3 +43,25 @@ def test_write_guard(monkeypatch):
     for bad in ("Order.cancel", "NewsletterRecipient.delete", "PriceList.delete", "OrderStatus.delete", "ProductImage.delete"):
         with pytest.raises(WgrError):
             check_write(bad)
+
+
+def test_inherited_params_filled_in():
+    d = ref.describe("Category.set")
+    names = {p["name"] for p in d["request_params"]}
+    assert {"id", "title_{languageCode}", "h1_{languageCode}", "isVisible"} <= names
+    assert "path_{languageCode}" not in names
+    assert any("URL" in n for n in d["notes"])
+
+
+def test_article_set_notes_say_object_and_h1():
+    text = " ".join(ref.describe("Article.set")["notes"])
+    assert "OBJECT" in text and "h1_" in text
+
+
+def test_article_create_includes_set_params():
+    names = {p["name"] for p in ref.describe("Article.create")["request_params"]}
+    assert {"externalParentArticleNumber", "categoryId", "price_{currencyCode}"} <= names
+
+
+def test_connection_notes_mention_cloudflare():
+    assert any("Cloudflare" in n for n in ref.connection_notes())

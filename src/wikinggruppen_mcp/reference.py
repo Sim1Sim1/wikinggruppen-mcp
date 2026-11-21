@@ -40,13 +40,47 @@ def list_methods(class_name: str | None = None) -> list[dict]:
     return out
 
 
+# Methods whose docs say "use the same parameters as in the response from X" (or "as in Y"): fill them in.
+# (target, source method, source key, field names to leave out)
+INHERIT = {
+    "Category.set": ("Category.get", "response_fields", {"path_{languageCode}"}),
+    "Category.create": ("Category.get", "response_fields", {"path_{languageCode}"}),
+    "Customer.set": ("Customer.get", "response_fields", set()),
+    "Customer.create": ("Customer.get", "response_fields", set()),
+    "NewsletterRecipient.set": ("NewsletterRecipient.get", "response_fields", set()),
+    "NewsletterRecipient.create": ("NewsletterRecipient.get", "response_fields", set()),
+    "OrderStatus.set": ("OrderStatus.get", "response_fields", set()),
+    "PriceList.set": ("PriceList.get", "response_fields", set()),
+    "PriceList.create": ("PriceList.get", "response_fields", {"id"}),
+    "Stock.set": ("Stock.get", "response_fields", set()),
+}
+
+
+@lru_cache
+def notes() -> dict:
+    return json.loads(_read("notes.json"))
+
+
+def connection_notes() -> list[str]:
+    return notes()["_connection"]
+
+
 def describe(method: str) -> dict:
     ref = reference()
     m = ref["methods"].get(method)
     if m is None:
         close = [k for k in ref["methods"] if method.lower() in k.lower()]
         raise KeyError(f"Unknown method '{method}'." + (f" Did you mean: {close}" if close else ""))
-    return {"method": method, "class": ref["classes"].get(m["class"], ""), **m}
+    out = {"method": method, "class": ref["classes"].get(m["class"], ""), **m}
+    if method in INHERIT:
+        src, key, skip = INHERIT[method]
+        out["request_params"] = out["request_params"] + [p for p in ref["methods"][src][key] if p["name"] not in skip]
+        out["request_params_note"] = f"Same parameters as the answer fields of {src}" + (f", without {sorted(skip)}" if skip else "") + "."
+    elif method == "Article.create":
+        out["request_params"] = out["request_params"] + ref["methods"]["Article.set"]["request_params"]
+        out["request_params_note"] = "Same parameters as Article.set, plus the ones listed first."
+    out["notes"] = notes().get(method, [])
+    return out
 
 
 def find_field(query: str, limit: int = 40) -> list[dict]:
