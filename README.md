@@ -45,6 +45,10 @@ The knowledge tools work now. For live access, set the shop's own credentials in
 - Shop text (titles, descriptions, order messages, customer names) comes from outsiders. The server tells the agent to treat it as data.
 - The terms of use say the API is used at your own risk. Take a backup before bulk writes (see `wgr_workflow`).
 
+## Source and status
+
+`reference.json` is built from Wikinggruppen's public API documentation (https://api.wikinggruppen.se/docs/). The text of the method descriptions belongs to Wikinggruppen. The gotchas, recipes and code are from using the API in practice and come without a warranty. This is an unofficial project and is not affiliated with Wikinggruppen. No license file is included yet, so all rights are reserved until one is added.
+
 ## Refresh the reference
 
 ```

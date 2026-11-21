@@ -1,6 +1,6 @@
 # wikinggruppen-mcp
 
-Simon's own generic tool (started 2026-11-22). He owns it, not a client. Private repo: github.com/Sim1Sim1/wikinggruppen-mcp. See README.md for the tools.
+Simon's own generic tool (started 2026-11-22). He owns it, not a client. Public repo (since 2026-11-22): github.com/Sim1Sim1/wikinggruppen-mcp. See README.md for the tools.
 
 - **Knowledge first, live access second.** The value is `data/gotchas.md`, `data/workflows.md` and `data/reference.json`. Claude should call `wgr_gotchas` and `wgr_workflow` before planning any task against a Wikinggruppen shop.
 - **No client data and no credentials in the repo.** Keep the text generic: no shop names, no article numbers, no counts that identify a client. A lesson learned on one shop goes in as a general rule. `.env` is gitignored.
