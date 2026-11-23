@@ -39,6 +39,14 @@ Learned by using the API against a live shop (Nov 2026, docs version 8.4.0; 11.0
 
 No specification table, no unit (`Enhet`), no product documents, no list price, no delivery time / back-order dates, no energy class, no main category, no article delete, no category delete. Those fields exist only in the CSV/Excel import. Images: `ProductImage.create` takes base64 plus `productId`, not a URL, and `ProductImage.delete` with only `productId` removes all images of the product.
 
+### Categories on an article (tested live 2026-11-23 on a hidden test article)
+
+- **`Article.set` `categoryId` replaces the whole set.** Send the list without a category to remove the article from it. Removing works.
+- **The order in the list is ignored**, and `Article.get` returns the ids sorted ascending, so the read order says nothing about the main category either.
+- **The main (default) category can be read but not written.** `getURLs` gives the URL in the default category, so its path tells which one it is.
+- **Every categoryId write lets the shop pick the main category again.** A main category set earlier (by hand or by having only one category) is not kept once the list has more than one. In four tests the pick did not follow id or list order (a top-level campaign category won over a three-level product category in both orders). It fits the category tree's sort order in the admin, which the API does not expose. Not proven. Consequence: if merchandising categories (campaign, brand, "tips") sort before the product categories, an API write can move the product's URL into them.
+- Main categories set by hand or by import are stored per article: articles with the same category set can have different main categories.
+
 ## Reading a lot of data
 
 - `Article.get` without parameters returns everything. For a large shop that is far too big for one call. Read per category (`categoryId`) in a loop and drop duplicates on `id`. An article that is in no category is not found this way.
