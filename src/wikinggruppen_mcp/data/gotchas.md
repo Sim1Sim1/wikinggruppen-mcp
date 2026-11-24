@@ -9,7 +9,7 @@ Learned by using the API against a live shop (Nov 2026, docs version 8.4.0; 11.0
 - **The success value differs per method.** `Article.set` and `Article.create` return an object `{articleNumber, id, productId}`. `Category.set` returns `true`, `Category.create` the new id. Do not test an `Article.set` answer against `true`: that made a successful write look like a failure.
 - **`Article.get` always returns an array**, also for one article. Filter on `articleNumber` in the result.
 - **Basic Auth.** The user name is given by Wikinggruppen without brackets. Each shop has its own copy of the API, so a method or field can exist in one shop and not another. Ask Wikinggruppen when something is missing.
-- **Shops behind Cloudflare.** A shop whose domain is proxied by Cloudflare answers `403 error code: 1106` to calls from a Cloudflare Worker. The same call works from a normal machine. The forwarding service (`https://api.wikinggruppen.se/forward/` with the shop's URL in the header `Api-Url`) works from a normal machine, but from a Worker it answered `400 Header Api-Url is missing`. Not solved. Run API jobs from a laptop, a server or CI, not from a Worker, until Wikinggruppen allows the caller or fixes the forwarding.
+- **Shops behind Cloudflare.** A shop whose domain is proxied by Cloudflare answers `403 error code: 1106` to calls from a Cloudflare Worker. The same call works from a normal machine. The forwarding service (`https://api.wikinggruppen.se/forward/` with the shop's URL in the header `Api-Url`) works from a normal machine, but from a Worker it answered `400 Header Api-Url is missing`. Solved for Hemmatema 2026-11-24: Wikinggruppen said the Worker's IP was blocked on their side and removed the block, after which direct calls from a Worker returned 200. If you see 1106, ask Wikinggruppen to unblock, no Cloudflare rule is needed.
 
 ## URLs and titles
 
@@ -23,6 +23,8 @@ Learned by using the API against a live shop (Nov 2026, docs version 8.4.0; 11.0
 - **Article numbers are unique.** If a new number is not unique the API changes it, so read the answer, do not assume.
 - **Hidden articles are many.** A shop can hold more hidden than visible articles (old ranges, supplier lines). `isHidden` is the only way to take an article out: there is no article delete. Categories cannot be deleted either (set `isVisible: false`).
 - **Category paths.** `path_sv` joins names with " - ", which also occurs inside names ("Sauna - Accessories"). Build paths from the `parentId` chain if you need something unambiguous. Category ids are fixed through renames and moves, so match on id.
+- **Text fields can hold odd bytes.** Some `stockPlace` values in a live shop contained NUL characters ("U\0T\0G\0Å\0T\0T", likely an old UTF-16 import), and descriptions contain HTML comments (`<!-- ... -->`). Strip NUL before writing to SQL or files, and quote `--` carefully if a tool splits SQL on comments.
+- **Prices are incl. VAT.** `price_SEK` and `campaignPrice_SEK` include VAT (checked against the live product page 2026-11-24); `inPrice` is excl. VAT. A campaign price of 0 means no campaign.
 - **Descriptions can carry markup from the theme.** A shop's `description_sv` may contain tab containers, a specification table and a data-sheet link inside the description. `Article.set` replaces the whole value, so those parts are lost when you write a new description. Look at a sample first.
 
 ## Categories
@@ -52,6 +54,7 @@ No specification table, no unit (`Enhet`), no product documents, no list price, 
 - `Article.get` without parameters returns everything. For a large shop that is far too big for one call. Read per category (`categoryId`) in a loop and drop duplicates on `id`. An article that is in no category is not found this way.
 - For updates, use `updatedFrom` (`YYYY-MM-DD HH:MM:SS`) on `Article.get`, `Stock.get` and `Order.get`.
 - A full read of about 57 000 articles took about 5 minutes and gave about 100 MB of JSON.
+- **No rate limit is documented** (docs 8.4.0 and 11.0.0 checked 2026-11-24, only the terms of use). The full read above, one category per call, was never throttled. Not confirmed with Wikinggruppen, so keep calls sequential and back off on errors.
 
 ## Writing safely
 
